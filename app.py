@@ -15,6 +15,7 @@ from database import DataBase
 app = Flask(__name__)
 log = app.logger
 
+
 @app.route('/', methods=['GET'])
 def root():
     return redirect('/1.0/')
@@ -27,14 +28,14 @@ def hello():
            '를 참고하세요.<br><br><div style="font-style: italic; font-size: large"></div>'
 
 
-@app.route('/1.0/new', method=['POST'])
+@app.route('/1.0/new', methods=['POST'])
 def create_user():
     username = request.args.get('username')
     password = request.args.get('password')
 
 
 
-@app.route('/1.0/login', method=['GET'])
+@app.route('/1.0/login', methods=['GET'])
 def login():
     username = request.args.get('username')
     password = request.args.get('password')
@@ -42,7 +43,7 @@ def login():
 
 
 
-@app.route('/1.0/request', method=['POST'])
+@app.route('/1.0/request', methods=['POST'])
 def asky():
     if request.method == 'POST':
         output = request.get_json()
