@@ -7,11 +7,10 @@ by github.com/computerpark (hackr)
 
 from flask import Flask, request, make_response, jsonify, redirect
 import json
-import datetime
-import pytz
 import random
 
-from luisai import LuisAI
+from nlp import LuisAI
+from database import DataBase
 
 app = Flask(__name__)
 log = app.logger
@@ -28,7 +27,22 @@ def hello():
            '를 참고하세요.<br><br><div style="font-style: italic; font-size: large"></div>'
 
 
-@app.route('/1.0/endpoint' method=['POST'])
+@app.route('/1.0/new', method=['POST'])
+def create_user():
+    username = request.args.get('username')
+    password = request.args.get('password')
+
+
+
+@app.route('/1.0/login', method=['GET'])
+def login():
+    username = request.args.get('username')
+    password = request.args.get('password')
+
+
+
+
+@app.route('/1.0/request', method=['POST'])
 def asky():
     if request.method == 'POST':
         output = request.get_json()
@@ -47,7 +61,7 @@ def asky():
 
         """
 
-        userstate = 
+
 
 
 
