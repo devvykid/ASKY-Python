@@ -33,6 +33,11 @@ def create_user():
     username = request.args.get('username')
     password = request.args.get('password')
 
+    db = DataBase()
+
+    return {
+        "result": db.create_user(username, password)
+    }
 
 
 @app.route('/1.0/login', methods=['GET'])
@@ -40,7 +45,11 @@ def login():
     username = request.args.get('username')
     password = request.args.get('password')
 
+    db = DataBase()
 
+    return {
+        "result": db.login_user(username, password)
+    }
 
 
 @app.route('/1.0/request', methods=['POST'])
@@ -54,16 +63,17 @@ def asky():
 
 
             {
-                "usertoken": "8자리 HEX 랜덤 넘버"
+                "userinfo": {
+                    "username" : "hackr"
+                    "password" : "sew00ngkkochuSAMcm"
+                },
                 "request"{
                     "string": "요청한 문자열"
                 }
             }
-
+        
+        이런 식으로 리퀘스트가 온다.
         """
-
-
-
 
 
 class InvalidUsage(Exception):
