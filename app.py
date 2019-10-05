@@ -9,11 +9,13 @@ from flask import Flask, request, make_response, jsonify, redirect
 import json
 import random
 
-from nlp import LuisAI
+#from nlp import DialogFlow
 from database import DataBase
+
 
 app = Flask(__name__)
 log = app.logger
+
 
 
 @app.route('/', methods=['GET'])
@@ -40,10 +42,12 @@ def create_user():
     }
 
 
-@app.route('/1.0/login', methods=['GET'])
+@app.route('/1.0/login', methods=['POST'])
 def login():
-    username = request.args.get('username')
-    password = request.args.get('password')
+    content = request.get_json()
+
+    username = content['username']
+    password = content['password']
 
     db = DataBase()
 
@@ -52,11 +56,31 @@ def login():
     }
 
 
+@app.route('/1.0/getuserinfo', methods=['POST'])
+def getparams():
+    content = request.get_json()
+
+    username = content['username']
+    password = content['password']
+
+    db = DataBase()
+
+    result = db.get_user_params(username, password)
+
+    return result
+
+
 @app.route('/1.0/request', methods=['POST'])
 def asky():
     if request.method == 'POST':
         output = request.get_json()
         print(output)
+
+        df = DialogFlow()
+
+        df.detect_intent_texts(output['string'])
+
+
 
         """
             Json의 포맷:

@@ -4,6 +4,10 @@ import sqlite3
 class DataBase:
     db_location = './databases/user.db'
 
+    """
+    HACK: PASSWORD IS NOT HASHED!!!
+    """
+
     def init_database(self):
         print("Init DB Called...")
 
@@ -56,7 +60,11 @@ class DataBase:
         if result is not None:
             return {
                 "status": 0,
-                "result": result
+                "result": {
+                    "username": result[0],
+                    "password": result[1],
+                    "feelings": result[2]
+                }
             }
         else:
             return {
