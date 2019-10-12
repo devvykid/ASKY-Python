@@ -32,8 +32,10 @@ def hello():
 
 @app.route('/1.0/new', methods=['POST'])
 def create_user():
-    username = request.args.get('username')
-    password = request.args.get('password')
+    content = request.get_json()
+
+    username = content['username']
+    password = content['password']
 
     db = DataBase()
 

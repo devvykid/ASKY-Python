@@ -1,12 +1,9 @@
 import sqlite3
+import hashlib
 
 
 class DataBase:
     db_location = './databases/user.db'
-
-    """
-    HACK: PASSWORD IS NOT HASHED!!!
-    """
 
     def init_database(self):
         print("Init DB Called...")
@@ -28,7 +25,18 @@ class DataBase:
         if c.fetchone() is None:
             # 기존 등록된 유저가 없다.
 
-            c.execute("INSERT INTO user VALUES ('%s', '%s', %d)" % (username, password, 50))
+            # Hashing
+            sha = hashlib.new('sha256')
+            print(password)
+            password = password.encode()
+            hexdigest = hashlib.sha256(password).hexdigest()
+
+            del sha
+            del password
+
+            c.execute("INSERT INTO user VALUES ('%s', '%s', %d)" % (username, hexdigest, 50))
+            del hexdigest
+
             conn.commit()
             conn.close()
             return 0
@@ -40,7 +48,16 @@ class DataBase:
         conn = sqlite3.connect(self.db_location)
         c = conn.cursor()
 
-        c.execute('SELECT * from user WHERE name="%s" AND password="%s"' % (username, password))
+        # Hashing
+        sha = hashlib.new('sha256')
+        password = password.encode()
+        hexdigest = hashlib.sha256(password).hexdigest()
+
+        c.execute('SELECT * from user WHERE name="%s" AND password="%s"' % (username, hexdigest))
+
+        del sha
+        del password
+        del hexdigest
 
         if c.fetchone() is not None:
             conn.close()
@@ -53,7 +70,16 @@ class DataBase:
         conn = sqlite3.connect(self.db_location)
         c = conn.cursor()
 
-        c.execute('SELECT * from user WHERE name="%s" AND password="%s"' % (username, password))
+        # Hashing
+        sha = hashlib.new('sha256')
+        password = password.encode()
+        hexdigest = hashlib.sha256(password).hexdigest()
+
+        c.execute('SELECT * from user WHERE name="%s" AND password="%s"' % (username, hexdigest))
+
+        del sha
+        del password
+        del hexdigest
 
         result = c.fetchone()
 
