@@ -20,24 +20,75 @@ log = app.logger
 
 @app.route('/', methods=['GET'])
 def root():
-    return redirect('/1.0/')
+    return redirect('/2.0/')
 
-
-@app.route('/1.0/', methods=['GET'])
-def hello():
-    return '안녕하세요!<br>ASKY 서버입니다! ' \
+@app.route('/2.0/', methods=['GET', 'POST'])
+def hello_v2():
+    return '안녕하세요!<br>ASKY 서버 (V2.0) 입니다! ' \
            '<a href="https://github.com/computerpark/asky-python">여기</a>' \
            '를 참고하세요.<br><br><div style="font-style: italic; font-size: large"></div>'
 
-
-@app.route('/1.0/new', methods=['POST'])
+@app.route('/2.0/new', methods=['POST'])
 def create_user():
     content = request.get_json()
 
     username = content['username']
     password = content['password']
+    real_name = content['real_name']
 
+    if (username is None) or (password is None) or (real_name is None):
+        InvalidUsage(message="필수 파라미터 중 None 값이 있습니다.", status_code=400)
+
+
+    '''
+    # example input:
+    {
+        "username": "hackr",
+        "password": "sewoongdick3cm",
+        "real_name": "컴터박"
+    }
+    
+    # requirements:
+    username은 (A-Z), (a-z), (0-9), _ 문자로만 구성되어야 합니다.
+    password는 6자 이상이여야 합니다.
+    username, password, 그리고 real_name은 비어있거나 공백이지 않아야 합니다.
+    '''
+
+    # username 양끝 공백 제거하기
+    username = username.strip()
+
+    # real_name 양끝 공백 제거하기
+    real_name = real_name.strip()
+
+    # 공백 조건 체크를 위하여 임시 스트리핑.
+    stripped_password = password.strip()
+
+    # 공백인 경우 필터링
+    if (username == '') or (stripped_password == '') or (real_name == ''):
+        return {
+            "result": "error",
+            "errordetails": {
+                "message": "Username이나, Password, 또는 Name 값을 채워주세요!"
+            }
+        }
+
+    # 데이터베이스 클래스
     db = DataBase()
+
+    # Username이 이미 존재하는지 체크
+    if db.check_user_exists(username):
+        return {
+            "result": "error",
+            "errordetails": {
+                "message": "이미 등록된 사용자 이름입니다!"
+            }
+        }
+
+    # TODO: username 글자 체크 (A-Z) etc...
+
+    # TODO: implement SQL Injection protection.
+
+
 
     return {
         "result": db.create_user(username, password)

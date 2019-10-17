@@ -97,4 +97,15 @@ class DataBase:
                 "status": 1
             }
 
+    def check_user_exists(self, username):
+        conn = sqlite3.connect(self.db_location)
+        c = conn.cursor()
 
+        c.execute('SELECT * from user WHERE name="%s"' % username)
+
+        result = c.fetchone()
+
+        if result is not None:
+            return 0    # user does not exist
+        else:
+            return 1    # user exists
