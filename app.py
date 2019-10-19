@@ -75,8 +75,10 @@ def create_user():
     # 데이터베이스 클래스
     db = DataBase()
 
+
+    print("username: " + username)
     # Username이 이미 존재하는지 체크
-    if db.check_user_exists(username):
+    if db.check_user_exists(username) == 1:
         return {
             "result": "error",
             "errordetails": {
@@ -88,11 +90,11 @@ def create_user():
 
     # TODO: implement SQL Injection protection.
 
-
-
+    result = db.create_user(username, password, real_name)
     return {
-        "result": db.create_user(username, password)
+        "result": "success"
     }
+
 
 
 @app.route('/1.0/login', methods=['POST'])

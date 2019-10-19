@@ -1,6 +1,6 @@
 import sqlite3
 import hashlib
-
+import base64
 
 class DataBase:
     db_location = './databases/user.db'
@@ -11,38 +11,40 @@ class DataBase:
         conn = sqlite3.connect(self.db_location)
         c = conn.cursor()
 
-        c.execute('CREATE TABLE user (name text, password text, feelings integer )')
+        c.execute('CREATE TABLE user (username text, password text, name text, feelings integer )')
 
         conn.commit()
         conn.close()
 
-    def create_user(self, username, password):
+    def create_user(self, username, password, real_name):
         conn = sqlite3.connect(self.db_location)
         c = conn.cursor()
 
         c.execute('SELECT * from user WHERE name="%s"' % username)
 
-        if c.fetchone() is None:
-            # 기존 등록된 유저가 없다.
+        # Hashing
+        sha = hashlib.new('sha256')
+        print(password)
+        password = password.encode()
+        hexdigest = hashlib.sha256(password).hexdigest()
 
-            # Hashing
-            sha = hashlib.new('sha256')
-            print(password)
-            password = password.encode()
-            hexdigest = hashlib.sha256(password).hexdigest()
+        del sha
+        del password
+        print("fuck")
+        e = real_name.encode("UTF-8")
+        print(e)
+        base64_name = base64.b64encode(e)
+        print(base64_name)
+        s1 = base64_name.decode("UTF-8")
+        print(s1)
 
-            del sha
-            del password
 
-            c.execute("INSERT INTO user VALUES ('%s', '%s', %d)" % (username, hexdigest, 50))
-            del hexdigest
+        c.execute("INSERT INTO user VALUES ('%s', '%s', '%s', %d)" % (username, hexdigest, s1, 50))
+        del hexdigest
 
-            conn.commit()
-            conn.close()
-            return 0
-        else:
-            # 같은 아이디가 존재
-            return 1
+        conn.commit()
+        conn.close()
+        return 0
 
     def login_user(self, username, password):
         conn = sqlite3.connect(self.db_location)
@@ -100,12 +102,12 @@ class DataBase:
     def check_user_exists(self, username):
         conn = sqlite3.connect(self.db_location)
         c = conn.cursor()
-
-        c.execute('SELECT * from user WHERE name="%s"' % username)
+        print("username: " + username)
+        c.execute('SELECT * from user WHERE username="%s"' % username)
 
         result = c.fetchone()
 
-        if result is not None:
+        if result is None:
             return 0    # user does not exist
         else:
             return 1    # user exists
