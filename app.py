@@ -1,6 +1,6 @@
 """
 ASKY (애스키) 프로젝트
-Python Flask 서버 V1
+Python Flask 서버 V2
 
 by github.com/computerpark (hackr)
 """
@@ -44,7 +44,12 @@ def create_user():
         nickname = content['nickname']
     except KeyError:
         InvalidUsage(message="필수 파라미터가 없습니다!", status_code=400)
-        return -1  # Never going to be called
+        return {
+            "result": "error",
+            "errordetails": {
+                "message": "필수 파라미터가 없습니다!"
+            }
+        }
     '''
     # example input:
     {
@@ -96,7 +101,12 @@ def login():
         password = content['password']
     except KeyError:
         InvalidUsage(message="필수 파라미터가 없습니다!", status_code=400)
-        return -1  # Never going to be called
+        return {
+            "result": "error",
+            "errordetails": {
+                "message": "필수 파라미터가 없습니다!"
+            }
+        }
 
     # TODO: implement SQL Injection protection.
 
