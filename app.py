@@ -39,6 +39,7 @@ def hello_v2():
 def create_user():
     content = request.get_json()
 
+    # Todo: 400 Bad Request When Missing Parameters
     username = content['username']
     password = content['password']
     real_name = content['real_name']
@@ -90,6 +91,7 @@ def create_user():
 
 @app.route('/v2.0/login', methods=['POST'])
 def login():
+    # Todo: 400 Bad Request When Missing Parameters
     content = request.get_json()
 
     username = content['username']
