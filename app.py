@@ -37,45 +37,43 @@ def hello_v2():
 
 @app.route('/v2.0/new', methods=['POST'])
 def create_user():
-    content = request.get_json()
-
-    # Todo: 400 Bad Request When Missing Parameters
-    username = content['username']
-    password = content['password']
-    real_name = content['real_name']
-
-    if (username is None) or (password is None) or (real_name is None):
-        InvalidUsage(message="필수 파라미터 중 None 값이 있습니다.", status_code=400)
-
+    try:
+        content = request.get_json()
+        username = content['username']
+        password = content['password']
+        nickname = content['nickname']
+    except KeyError:
+        InvalidUsage(message="필수 파라미터가 없습니다!", status_code=400)
+        return -1  # Never going to be called
     '''
     # example input:
     {
         "username": "hackr",
         "password": "sewoongdick3cm",
-        "real_name": "컴터박"
+        "nickname": "컴터박"
     }
     
     # requirements:
     username은 (A-Z), (a-z), (0-9), _ 문자로만 구성되어야 합니다.
     password는 6자 이상이여야 합니다.
-    username, password, 그리고 real_name은 비어있거나 공백이지 않아야 합니다.
+    username, password, 그리고 nickname은 비어있거나 공백이지 않아야 합니다.
     '''
 
     # username 양끝 공백 제거하기
     username = username.strip()
 
-    # real_name 양끝 공백 제거하기
-    real_name = real_name.strip()
+    # nickname 양끝 공백 제거하기
+    nickname = nickname.strip()
 
     # 공백 조건 체크를 위하여 임시 스트리핑.
     stripped_password = password.strip()
 
     # 공백인 경우 필터링
-    if (username == '') or (stripped_password == '') or (real_name == ''):
+    if (username == '') or (stripped_password == '') or (nickname == ''):
         return {
             "result": "error",
             "errordetails": {
-                "message": "Username이나, Password, 또는 Name 값을 채워주세요!"
+                "message": "유저네임이나, 패스워드, 또는 닉네임 값을 채워주세요!"
             }
         }
 
@@ -85,17 +83,20 @@ def create_user():
 
     # Connect DB
     db = DataBase()
-    result = db.create_user(username, password, real_name)
+    result = db.create_user(username, password, nickname)
     return result
 
 
 @app.route('/v2.0/login', methods=['POST'])
 def login():
-    # Todo: 400 Bad Request When Missing Parameters
-    content = request.get_json()
+    try:
+        content = request.get_json()
 
-    username = content['username']
-    password = content['password']
+        username = content['username']
+        password = content['password']
+    except KeyError:
+        InvalidUsage(message="필수 파라미터가 없습니다!", status_code=400)
+        return -1  # Never going to be called
 
     # TODO: implement SQL Injection protection.
 
