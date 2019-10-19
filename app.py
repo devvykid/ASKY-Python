@@ -17,18 +17,25 @@ app = Flask(__name__)
 log = app.logger
 
 
-
 @app.route('/', methods=['GET'])
 def root():
-    return redirect('/2.0/')
+    return redirect('/v2.0/')
 
-@app.route('/2.0/', methods=['GET', 'POST'])
+
+@app.route('/2.0/<redirectpath>', methods=['POST', 'GET'])
+def gangjusexwith416(redirectpath):
+    return redirect('/2.0/' + redirectpath)
+    # TODO: FIX 405 Method Not Allowed Error
+
+
+@app.route('/v2.0/', methods=['GET', 'POST'])
 def hello_v2():
     return '안녕하세요!<br>ASKY 서버 (V2.0) 입니다! ' \
            '<a href="https://github.com/computerpark/asky-python">여기</a>' \
            '를 참고하세요.<br><br><div style="font-style: italic; font-size: large"></div>'
 
-@app.route('/2.0/new', methods=['POST'])
+
+@app.route('/v2.0/new', methods=['POST'])
 def create_user():
     content = request.get_json()
 
@@ -38,7 +45,6 @@ def create_user():
 
     if (username is None) or (password is None) or (real_name is None):
         InvalidUsage(message="필수 파라미터 중 None 값이 있습니다.", status_code=400)
-
 
     '''
     # example input:
@@ -72,87 +78,30 @@ def create_user():
             }
         }
 
-    # 데이터베이스 클래스
-    db = DataBase()
-
-
-    print("username: " + username)
-    # Username이 이미 존재하는지 체크
-    if db.check_user_exists(username) == 1:
-        return {
-            "result": "error",
-            "errordetails": {
-                "message": "이미 등록된 사용자 이름입니다!"
-            }
-        }
-
     # TODO: username 글자 체크 (A-Z) etc...
 
     # TODO: implement SQL Injection protection.
 
+    # Connect DB
+    db = DataBase()
     result = db.create_user(username, password, real_name)
-    return {
-        "result": "success"
-    }
+    return result
 
 
-
-@app.route('/1.0/login', methods=['POST'])
+@app.route('/v2.0/login', methods=['POST'])
 def login():
     content = request.get_json()
 
     username = content['username']
     password = content['password']
 
-    db = DataBase()
-
-    return {
-        "result": db.login_user(username, password)
-    }
-
-
-@app.route('/1.0/getuserinfo', methods=['POST'])
-def getparams():
-    content = request.get_json()
-
-    username = content['username']
-    password = content['password']
+    # TODO: implement SQL Injection protection.
 
     db = DataBase()
 
-    result = db.get_user_params(username, password)
+    result = db.login_user(username, password)
 
     return result
-
-
-@app.route('/1.0/request', methods=['POST'])
-def asky():
-    if request.method == 'POST':
-        output = request.get_json()
-        print(output)
-
-        df = DialogFlow()
-
-        df.detect_intent_texts(output['string'])
-
-
-
-        """
-            Json의 포맷:
-
-
-            {
-                "userinfo": {
-                    "username" : "hackr"
-                    "password" : "sew00ngkkochuSAMcm"
-                },
-                "request"{
-                    "string": "요청한 문자열"
-                }
-            }
-        
-        이런 식으로 리퀘스트가 온다.
-        """
 
 
 class InvalidUsage(Exception):
