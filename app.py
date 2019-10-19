@@ -1,6 +1,6 @@
 """
 ASKY (애스키) 프로젝트
-Python Flask 서버 V1
+Python Flask 서버 V2
 
 by github.com/computerpark (hackr)
 """
