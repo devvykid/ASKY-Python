@@ -6,10 +6,10 @@ by github.com/computerpark (hackr)
 """
 
 from flask import Flask, request, make_response, jsonify, redirect
-import json
-import random
+# import json
+# import random
 
-#from nlp import DialogFlow
+# from nlp import DialogFlow
 from database import DataBase
 
 
@@ -116,6 +116,7 @@ def login():
 
     return result
 
+
 @app.route('/v2.1/request', methods=['POST'])
 def request_asky():
     # When bombs, nukes, and LOICs fail, go fuck yourself.
@@ -137,6 +138,8 @@ def request_asky():
             }
         }
 
+    # TODO: Implement SQL Injection Protection.
+
     if process_type == 'idle':
         # Something works here...
         db = DataBase()
@@ -149,7 +152,35 @@ def request_asky():
                 "data": {
                     "userstate": user_info['data']['userstate']
                 },
-                "type": []
+                "type": ["EmojiBalloons"],
+                "response": {
+                    "EmojiBalloons": {
+                        "emoji": "❤😊👉👌💦💦"
+                    }
+                }
+            }
+
+            return result
+        else:
+            return user_info
+
+    elif process_type == 'nlp':
+        db = DataBase()
+
+        user_info = db.get_user_info(username, token)
+
+        if user_info['result'] == "success":
+            result = {
+                "result": "success",
+                "data": {
+                    "userstate": user_info['data']['userstate']
+                },
+                "type": ["Conversation"],
+                "response": {
+                    "Conversation": {
+                        "str": "세웅이 꼬chu는 짧은 것 같아요. 그렇죠, 지휘관?"
+                    }
+                }
             }
 
             return result
@@ -157,22 +188,12 @@ def request_asky():
             return user_info
 
 
-    elif process_type == 'nlp':
-        go = "fck".format("yrslf")
-
-    # TODO: Implement SQL Injection Protection.
-
     return {
         "result": "error",
         "errordetails": {
             "message": "호출 파라미터가 올바르지 않습니다!"
         }
     }
-
-
-
-
-
 
 
 class InvalidUsage(Exception):
