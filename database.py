@@ -1,5 +1,6 @@
 import sqlite3
 import uuid
+import hashlib
 
 from library import HackerLibrary
 
@@ -75,8 +76,7 @@ class DataBase:
         c.execute("INSERT INTO user VALUES ('%s', '%s', '%s', %d)" % (username, enc_password, s, 50))
         conn.commit()
 
-        # Delete Objects
-        del password, enc_password
+        # Close Connection
         conn.close()
 
         return {
@@ -91,9 +91,6 @@ class DataBase:
         conn = sqlite3.connect(self.user_db_location)
         c = conn.cursor()
         c.execute('SELECT * from user WHERE username="%s" AND password="%s"' % (username, enc_password))
-
-        # Delete Objects
-        del password, enc_password
 
         if c.fetchone() is not None:
             conn.close()
@@ -117,36 +114,60 @@ class DataBase:
                 }
             }
 
-    def get_user_params(self, username, password):
-        conn = sqlite3.connect(self.user_db_location)
+    def get_user_info(self, username, token):
+        # TODO: Filter username ! important
+        # TODO: Filter token ! important
+
+        # Database Query
+        conn = sqlite3.connect(self.token_db_location)
         c = conn.cursor()
+        c.execute('SELECT * from user WHERE username="%s" AND token="%s"' % (username, token))
+        if c.fetchone() is None:
+            conn.close()
 
-        # Hashing
-        sha = hashlib.new('sha256')
-        password = password.encode()
-        hexdigest = hashlib.sha256(password).hexdigest()
-
-        c.execute('SELECT * from user WHERE name="%s" AND password="%s"' % (username, hexdigest))
-
-        del sha
-        del password
-        del hexdigest
-
-        result = c.fetchone()
-
-        if result is not None:
             return {
-                "status": 0,
-                "result": {
-                    "username": result[0],
-                    "password": result[1],
-                    "feelings": result[2]
+                "result": "error",
+                "errordetails": {
+                    "message": "유저네임이나 토큰이 올바르지 않습니다!"
                 }
             }
-        else:
-            return {
-                "status": 1
-            }
+        else:   # Token is valid!
+            conn.close()
+
+            # Connect USER DB
+            conn = sqlite3.connect(self.user_db_location)
+            c = conn.cursor()
+            c.execute('SELECT * from user WHERE username="%s"' % username)
+
+            db_result = c.fetchone()
+            if db_result is not None:
+                conn.close()
+
+                print(db_result)
+
+                return {
+                    "result": "success",
+                    "data": {
+                        "userstate": {
+                            "username": str(db_result[0]),
+                            "feelings": str(db_result[3]),
+                            "real_name": self.hl.decode_base64(db_result[2])
+                        }
+                    }
+                }
+            else:
+                conn.close()
+
+                print("에러! : USER DB 조회중 심각한 에러: Token DB에는 유저가 있지만 User DB에는 없습니다!")
+
+                return {
+                    "result": "error",
+                    "errordetails": {
+                        "message": "USER DB 조회중 심각한 에러가 발생하였습니다. 어드민에게 신고해 주시기 바랍니다.",
+                        "details": "에러! : USER DB 조회중 심각한 에러: Token DB에는 유저가 있지만 User DB에는 없습니다!",
+                        "errorcode": "E-FUCK"
+                    }
+                }
 
     @staticmethod
     def check_user_exists(username, db_location):

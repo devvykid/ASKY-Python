@@ -12,8 +12,16 @@ class HackerLibrary:
         return s
 
     @staticmethod
+    def decode_base64(string):
+
+        e = string.encode("UTF-8")
+        b = base64.b64decode(e)
+        s = b.decode("UTF-8")
+
+        return s
+
+    @staticmethod
     def encode_sha256(string):
-        sha = hashlib.new('sha256')
         string = string.encode("UTF-8")
         enc_string = hashlib.sha256(string).hexdigest()
 
