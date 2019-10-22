@@ -11,6 +11,7 @@ from flask import Flask, request, make_response, jsonify, redirect
 
 # from nlp import DialogFlow
 from database import DataBase
+from nlp import LuisAI
 
 
 app = Flask(__name__)
@@ -129,6 +130,8 @@ def request_asky():
 
         if process_type == 'nlp':
             request_string = content['data']['requestStr']
+        else:
+            request_string = None
     except KeyError:
         InvalidUsage(message="필수 파라미터가 없습니다!", status_code=400)
         return {
@@ -169,6 +172,12 @@ def request_asky():
 
         user_info = db.get_user_info(username, token)
 
+        luisai = LuisAI()
+
+        luis_results = luisai.think(request_string)
+
+        reply = luisai.get_reply(luis_results['topScoringIntent']['intent'])
+
         if user_info['result'] == "success":
             result = {
                 "result": "success",
@@ -178,7 +187,7 @@ def request_asky():
                 "type": ["Conversation"],
                 "response": {
                     "Conversation": {
-                        "str": "세웅이 꼬chu는 짧은 것 같아요. 그렇죠, 지휘관?"
+                        "str": reply
                     }
                 }
             }
@@ -186,7 +195,6 @@ def request_asky():
             return result
         else:
             return user_info
-
 
     return {
         "result": "error",
