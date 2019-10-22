@@ -19,7 +19,7 @@ log = app.logger
 
 @app.route('/', methods=['GET'])
 def root():
-    return redirect('/v2.0/')
+    return redirect('/v2.1/')
 
 
 @app.route('/2.0/<redirectpath>', methods=['POST', 'GET'])
@@ -28,14 +28,14 @@ def gangjusexwith416(redirectpath):
     # TODO: FIX 405 Method Not Allowed Error
 
 
-@app.route('/v2.0/', methods=['GET', 'POST'])
+@app.route('/v2.1/', methods=['GET', 'POST'])
 def hello_v2():
     return '안녕하세요!<br>ASKY 서버 (V2.0) 입니다! ' \
            '<a href="https://github.com/computerpark/asky-python">여기</a>' \
            '를 참고하세요.<br><br><div style="font-style: italic; font-size: large"></div>'
 
 
-@app.route('/v2.0/new', methods=['POST'])
+@app.route('/v2.1/new', methods=['POST'])
 def create_user():
     try:
         content = request.get_json()
@@ -92,7 +92,7 @@ def create_user():
     return result
 
 
-@app.route('/v2.0/login', methods=['POST'])
+@app.route('/v2.1/login', methods=['POST'])
 def login():
     try:
         content = request.get_json()
@@ -115,6 +115,64 @@ def login():
     result = db.login_user(username, password)
 
     return result
+
+@app.route('/v2.1/request', methods=['POST'])
+def request_asky():
+    # When bombs, nukes, and LOICs fail, go fuck yourself.
+    try:
+        content = request.get_json()
+
+        username = content['username']
+        token = content['token']
+        process_type = content['type']
+
+        if process_type == 'nlp':
+            request_string = content['data']['requestStr']
+    except KeyError:
+        InvalidUsage(message="필수 파라미터가 없습니다!", status_code=400)
+        return {
+            "result": "error",
+            "errordetails": {
+                "message": "필수 파라미터가 없습니다!"
+            }
+        }
+
+    if process_type == 'idle':
+        # Something works here...
+        db = DataBase()
+
+        user_info = db.get_user_info(username, token)
+
+        if user_info['result'] == "success":
+            result = {
+                "result": "success",
+                "data": {
+                    "userstate": user_info['data']['userstate']
+                },
+                "type": []
+            }
+
+            return result
+        else:
+            return user_info
+
+
+    elif process_type == 'nlp':
+        go = "fck".format("yrslf")
+
+    # TODO: Implement SQL Injection Protection.
+
+    return {
+        "result": "error",
+        "errordetails": {
+            "message": "호출 파라미터가 올바르지 않습니다!"
+        }
+    }
+
+
+
+
+
 
 
 class InvalidUsage(Exception):
