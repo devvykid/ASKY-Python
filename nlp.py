@@ -1,5 +1,7 @@
 import requests
-import random
+
+from library import HackerLibrary
+from database import DataBase
 
 
 class LuisAI:
@@ -33,92 +35,177 @@ class LuisAI:
             print(e)
             raise ValueError
 
-    def get_reply(self, intent):
-        fuck = "쎅쓰!"
+    @staticmethod
+    def get_reply(intent, user_info):
+        hl = HackerLibrary()
+        db = DataBase()
 
-        feelings = 50
+        username = user_info['data']['userstate']['username']
+        feelings = user_info['data']['userstate']['feelings']
+        nickname = user_info['data']['userstate']['nickname']
 
-        if intent == 'Communication.Hello':
-            response_strings = ["랜덤 스트링 1",
-                                "랜덤 스트링 2",
-                                "랜덤 스트링 3"]
-            return random.choice(response_strings)
+        # BrainFuck & 노가다 Start!
+        # Have a good time!
 
-        elif intent == 'Communication.Bye':
-            response_strings = ["랜덤 스트링 1",
-                                "랜덤 스트링 2",
-                                "랜덤 스트링 3"]
-            return random.choice(response_strings)
+        if intent == 'Special.NewUser':  # LUIS.ai 에 정의되지 않았음.
+            return "안녕, %s! 나는 45라고 해. 우리 처음 보는 거 맞지? 넘 반가워!! 앞으로도 잘 부탁해!" % nickname
 
-        elif intent == 'Communication.Hello':
-            response_strings = ["랜덤 스트링 1",
-                                "랜덤 스트링 2",
-                                "랜덤 스트링 3"]
-            return random.choice(response_strings)
+        elif intent == 'Communication.Common.Bye':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
 
-        elif intent == 'Communication.No':
-            response_strings = ["랜덤 스트링 1",
-                                "랜덤 스트링 2",
-                                "랜덤 스트링 3"]
-            return random.choice(response_strings)
+            return hl.choose_reply(random_response_string, feelings)
+        elif intent == 'Communication.Common.Hello':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
 
-        elif intent == 'Communication.Okay':
-            response_strings = ["랜덤 스트링 1",
-                                "랜덤 스트링 2",
-                                "랜덤 스트링 3"]
-            return random.choice(response_strings)
+            return hl.choose_reply(random_response_string, feelings)
 
-        elif intent == 'Communication.Pause':
-            response_strings = ["랜덤 스트링 1",
-                                "랜덤 스트링 2",
-                                "랜덤 스트링 3"]
-            return random.choice(response_strings)
+        elif intent == 'Communication.Etc.Swear':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
 
-        elif intent == 'Communication.StartWordGame':
-            response_strings = ["랜덤 스트링 1",
-                                "랜덤 스트링 2",
-                                "랜덤 스트링 3"]
-            return random.choice(response_strings)
+            # 호감도를 대폭 차감한다.
+            db.alter_feelings(username, -5)
 
-        elif intent == 'Communication.TellFunStory':
-            response_strings = ["랜덤 스트링 1",
-                                "랜덤 스트링 2",
-                                "랜덤 스트링 3"]
-            return random.choice(response_strings)
+            return hl.choose_reply(random_response_string, feelings)
 
-        elif intent == 'Communication.TellTodayStory':
-            response_strings = ["랜덤 스트링 1",
-                                "랜덤 스트링 2",
-                                "랜덤 스트링 3"]
-            return random.choice(response_strings)
+        elif intent == 'Communication.Etc.WhatTheFuck':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
 
-        elif intent == 'Communication.TodayFeelings':
-            response_strings = ["랜덤 스트링 1",
-                                "랜덤 스트링 2",
-                                "랜덤 스트링 3"]
-            return random.choice(response_strings)
+            return hl.choose_reply(random_response_string, feelings)
+
+        elif intent == 'Communication.Event.Ask.StartWordGame':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["끝말잇기 하자고? 응 좋아, 간다?", "끝말잇기? 좋아! 먼저 시작해!", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
+        elif intent == 'Communication.Event.Ask.TellFunStory':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
+
+        elif intent == 'Communication.EveryDay.Ask.DoTogether.Eat':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
+        elif intent == 'Communication.EveryDay.Ask.TellTodayStory':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
+        elif intent == 'Communication.EveryDay.Ask.TodayFeelings':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
+        elif intent == 'Communication.EveryDay.Ask.WhatWereYouDoing':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
+        elif intent == 'Communication.EveryDay.Feelings.UserHappy':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
+        elif intent == 'Communication.EveryDay.Feelings.UserSad':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
+
+        elif intent == 'Communication.Intent.No':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
+        elif intent == 'Communication.Intent.Yes':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
+
+        elif intent == 'Communication.ParaLang.Pause':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
+
+        elif intent == 'Communication.RelationShip.Confession':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
+        elif intent == 'Communication.RelationShip.Feelings.HateYou':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
+        elif intent == 'Communication.RelationShip.Feelings.LoveYou':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
+        elif intent == 'Communication.RelationShip.RequestDate':
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
 
         elif intent == 'None':
-            response_strings = ["랜덤 스트링 1",
-                                "랜덤 스트링 2",
-                                "랜덤 스트링 3"]
-            return random.choice(response_strings)
+            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ]
+
+            return hl.choose_reply(random_response_string, feelings)
 
         else:
             raise ValueError
 
-        """
-        가상여친 대답 목록
-
-        처음 시작: 안녕, <이름>! 나는 45라고 해. 우리 처음 보는 거 맞지? 넘 반가워!! 앞으로도 잘 부탁해!
-
-
-        끝말잇기: 끝말잇기 하자고? 응 좋아, 간다?
-
-
-
-
-        """
+        # 시1발
 
     @staticmethod
     def word_game():
