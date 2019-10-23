@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import random
 
 
 class HackerLibrary:
@@ -26,3 +27,12 @@ class HackerLibrary:
         enc_string = hashlib.sha256(string).hexdigest()
 
         return enc_string
+
+    @staticmethod
+    def choose_reply(arr, feelings):
+        if feelings <= 33:
+            return random.choice(arr[0])
+        elif feelings <= 66:
+            return random.choice(arr[1])
+        else:
+            return random.choice(arr[2])

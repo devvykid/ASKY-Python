@@ -19,7 +19,7 @@ class DataBase:
             conn = sqlite3.connect(self.user_db_location)
             c = conn.cursor()
 
-            c.execute('CREATE TABLE user (username text, password text, name text, feelings integer )')
+            c.execute('CREATE TABLE user (username text, password text, name text, feelings integer, newuser integer )')
 
             conn.commit()
             conn.close()
@@ -38,7 +38,7 @@ class DataBase:
         except sqlite3.OperationalError:
             print("Token DB Init Failed.")
 
-    def create_user(self, username, password, real_name):
+    def create_user(self, username, password, nickname):
         # Check if username already exists
         if self.check_user_exists(username, self.user_db_location) == 1:
             return {
@@ -53,7 +53,7 @@ class DataBase:
 
         # Encode Name in Base64
         try:
-            s = self.hl.encode_base64(real_name)
+            s = self.hl.encode_base64(nickname)
         except UnicodeError as e:
             return {
                 "result": "error",
@@ -73,7 +73,7 @@ class DataBase:
         conn = sqlite3.connect(self.user_db_location)
         c = conn.cursor()
 
-        c.execute("INSERT INTO user VALUES ('%s', '%s', '%s', %d)" % (username, enc_password, s, 50))
+        c.execute("INSERT INTO user VALUES ('%s', '%s', '%s', %d, %d)" % (username, enc_password, s, 50, 1))
         conn.commit()
 
         # Close Connection
@@ -150,8 +150,8 @@ class DataBase:
                     "data": {
                         "userstate": {
                             "username": str(db_result[0]),
-                            "feelings": str(db_result[3]),
-                            "real_name": self.hl.decode_base64(db_result[2])
+                            "feelings": db_result[3],
+                            "nickname": self.hl.decode_base64(db_result[2])
                         }
                     }
                 }
@@ -183,6 +183,27 @@ class DataBase:
         else:
             return 1    # user exists
 
+    def check_if_new_user(self, username):
+        conn = sqlite3.connect(self.user_db_location)
+        c = conn.cursor()
+        c.execute('SELECT * from user WHERE username="%s"' % username)
+
+        result = c.fetchone()
+
+        if result is None:
+            raise ValueError
+        else:
+            print("NewUser Check: RETURNING %d" % result[4])
+            return result[4]
+
+    def set_as_normal_user(self, username):
+        conn = sqlite3.connect(self.user_db_location)
+        c = conn.cursor()
+        c.execute('UPDATE user SET newuser=0 WHERE username="%s"' % username)
+
+        conn.commit()
+        conn.close()
+
     @staticmethod
     def delete_user(username, db_location):
         conn = sqlite3.connect(db_location)
@@ -210,3 +231,38 @@ class DataBase:
         tconn.close()
 
         return '{' + str(tmp_uuid) + '}'
+
+    def alter_feelings(self, username, delta):
+        # Connect USER DB
+        conn = sqlite3.connect(self.user_db_location)
+        c = conn.cursor()
+        c.execute('SELECT * from user WHERE username="%s"' % username)
+
+        db_result = c.fetchone()
+        if db_result is not None:
+            feelings = db_result[3]
+
+            if feelings + delta < 0:
+                feelings = 0
+            elif feelings + delta > 100:
+                feelings = 100
+            else:
+                feelings = feelings + delta
+
+            c.execute('UPDATE user SET feelings=%d WHERE username="%s"' % (feelings, username))
+
+            conn.commit()
+            conn.close()
+
+            return {
+                "result": "success",
+                "data": {
+                    "userstate": {
+                        "username": str(db_result[0]),
+                        "feelings": db_result[3],
+                        "nickname": self.hl.decode_base64(db_result[2])
+                    }
+                }
+            }
+        else:
+            raise sqlite3.DataError

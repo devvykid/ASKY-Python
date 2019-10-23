@@ -17,23 +17,19 @@ from nlp import LuisAI
 app = Flask(__name__)
 log = app.logger
 
+asky_version = '2.1'
+
 
 @app.route('/', methods=['GET'])
 def root():
     return redirect('/v2.1/')
 
 
-@app.route('/2.0/<redirectpath>', methods=['POST', 'GET'])
-def gangjusexwith416(redirectpath):
-    return redirect('/2.0/' + redirectpath)
-    # TODO: FIX 405 Method Not Allowed Error
-
-
 @app.route('/v2.1/', methods=['GET', 'POST'])
-def hello_v2():
-    return '안녕하세요!<br>ASKY 서버 (V2.0) 입니다! ' \
+def hello():
+    return '안녕하세요!<br>ASKY 서버 (v%s) 입니다! ' \
            '<a href="https://github.com/computerpark/asky-python">여기</a>' \
-           '를 참고하세요.<br><br><div style="font-style: italic; font-size: large"></div>'
+           '를 참고하세요.<br><br><div style="font-style: italic; font-size: large"></div>' % asky_version
 
 
 @app.route('/v2.1/new', methods=['POST'])
@@ -150,17 +146,32 @@ def request_asky():
         user_info = db.get_user_info(username, token)
 
         if user_info['result'] == "success":
+            if db.check_if_new_user(username):
+                luisai = LuisAI()
+
+                reply = luisai.get_reply('Special.NewUser', user_info)
+                db.set_as_normal_user(username)
+
+                return {
+                    "result": "success",
+                    "data": {
+                        "userstate": user_info['data']['userstate']
+                    },
+                    "type": ["StartConversation"],
+                    "response": {
+                        "StartConversation": {
+                            "str": reply
+                        }
+                    }
+                }
+
             result = {
                 "result": "success",
                 "data": {
                     "userstate": user_info['data']['userstate']
                 },
-                "type": ["EmojiBalloons"],
-                "response": {
-                    "EmojiBalloons": {
-                        "emoji": "❤😊👉👌💦💦"
-                    }
-                }
+                "type": [],
+                "response": {}
             }
 
             return result
@@ -176,7 +187,9 @@ def request_asky():
 
         luis_results = luisai.think(request_string)
 
-        reply = luisai.get_reply(luis_results['topScoringIntent']['intent'])
+        reply = luisai.get_reply(luis_results['topScoringIntent']['intent'], user_info)
+
+        user_info = db.get_user_info(username, token)  # get user info again
 
         if user_info['result'] == "success":
             result = {
