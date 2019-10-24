@@ -11,7 +11,7 @@ from flask import Flask, request, make_response, jsonify, redirect
 
 # from nlp import DialogFlow
 from database import DataBase
-from nlp import LuisAI
+from nlp import LuisAI, WordGame
 
 
 app = Flask(__name__)
@@ -111,6 +111,9 @@ def login():
 
     result = db.login_user(username, password)
 
+    db.reset_used_word(username)
+    db.set_state(username, "normal")
+
     return result
 
 
@@ -182,6 +185,35 @@ def request_asky():
         db = DataBase()
 
         user_info = db.get_user_info(username, token)
+
+        if user_info['result'] is 'error':
+            return user_info
+
+        state = user_info['data']['userstate']['state']
+
+        if state == 'wordgame':
+            # TODO: 기권처리
+            wg = WordGame()
+            reply = wg.word_game(username, request_string)
+
+            user_info = db.get_user_info(username, token)  # get user info again
+
+            result = {
+                "result": "success",
+                "data": {
+                    "userstate": user_info['data']['userstate']
+                },
+                "type": ["Conversation"],
+                "response": {
+                    "Conversation": {
+                        "str": reply
+                    }
+                }
+            }
+
+            return result
+
+
 
         luisai = LuisAI()
 
