@@ -1,6 +1,6 @@
 import sqlite3
 import uuid
-import hashlib
+# import hashlib
 import pickle
 import codecs
 import re
@@ -309,6 +309,20 @@ class DataBase:
         else:
             raise sqlite3.DataError
 
+    def get_state(self, username):
+        # Connect USER DB
+        conn = sqlite3.connect(self.user_db_location)
+        c = conn.cursor()
+        c.execute('SELECT * from user WHERE username="%s"' % username)
+
+        db_result = c.fetchone()
+        if db_result is not None:
+            conn.close()
+            return db_result[5]
+
+        else:
+            raise sqlite3.DataError
+
     def add_used_word(self, username, word):
         # Connect WORD DB
         conn = sqlite3.connect(self.word_db_location)
@@ -384,8 +398,8 @@ class DataBase:
             conn.close()
 
             return 0
-        else:
-            raise ValueError
+        else:  # 애초에 데이터베이스에 유저의 기록이 없을 때
+            return 0
 
     def get_used_words(self, username):
         # Connect WORD DB

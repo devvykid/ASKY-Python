@@ -1,15 +1,13 @@
 """
-ASKY (애스키) 프로젝트
-Python Flask 서버 V2
+ASKY SERVER 2.1 - version 10/25/2019
 
-by github.com/computerpark (hackr)
+(c) 2019 JY Park (computerpark) . All Rights Reserved.
+
+app.py - 서버 리퀘스트를 처리합니다.
 """
 
-from flask import Flask, request, make_response, jsonify, redirect
-# import json
-# import random
+from flask import Flask, request, jsonify, redirect
 
-# from nlp import DialogFlow
 from database import DataBase
 from nlp import LuisAI, WordGame
 
@@ -192,9 +190,9 @@ def request_asky():
         state = user_info['data']['userstate']['state']
 
         if state == 'wordgame':
-            # TODO: 기권처리
             wg = WordGame()
-            reply = wg.word_game(username, request_string)
+
+            reply = wg.word_game(username, request_string.strip())
 
             user_info = db.get_user_info(username, token)  # get user info again
 
@@ -212,8 +210,6 @@ def request_asky():
             }
 
             return result
-
-
 
         luisai = LuisAI()
 
