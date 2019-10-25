@@ -57,24 +57,27 @@ class LuisAI:
             # 잘못 인식 (이 함수 자체가 호출될 일이 없다)
             return self.get_reply('None', user_info)
         elif intent == 'Communication.Common.Bye':
-            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
-                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
-                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+            random_response_string = [["잘 가!", "응, 잘 가", "그래, 잘 가."],
+                                      ["잘 가!!! 다음에도 꼭 와야해!!", "응, 고마워! 다음에 다시 보자!"],
+                                      ["응응!! 내일도 꼭 다시봐야돼! 사랑해❤"],
                                       ]
+
+            # ㅅ1바라ㅏㅏㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹㄹㅁㄴㅇ룀혀ㅛ롸ㅣㅓ,ㅁㄷㅈㅍ밧뮤ㅣㄷ뱌3ㅕㅏㅇㅁ랴ㅕㅅㅎㅅ비댜ㅕㄱㅁ
+            # 핸드폰으로 딱지치고 싶다...
 
             return hl.choose_reply(random_response_string, feelings)
         elif intent == 'Communication.Common.Hello':
-            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
-                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
-                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+            random_response_string = [["안녕! 반가워!"],
+                                      ["안녕 %s! 이렇게 와줘서 정말 기뻐!" % nickname, "우와! %s이네! 반가워😊" % nickname],
+                                      ["❤❤또 와줬네, %s! 다시 보니까 너무 좋다. 오늘도 같이 재밌는 일 하자!" % nickname],
                                       ]
 
             return hl.choose_reply(random_response_string, feelings)
 
         elif intent == 'Communication.Etc.Swear':
-            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
-                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
-                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+            random_response_string = [["흐아앙... ", "호감도 Low-2", "호감도 Low-3"],
+                                      ["힝... 그런 말 쓰면 무서워요...", "흐엑.. 그런 말 쓰면 불편해요.."],
+                                      ["그런 말 쓰면 무서워요ㅠㅠ.. 그런 말은 쓰지 말아줬으면 좋겠어요😥"]
                                       ]
 
             # 호감도를 대폭 차감한다.
@@ -84,18 +87,19 @@ class LuisAI:
 
         elif intent == 'Communication.Etc.WhatTheFuck':
             random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
-                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
-                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ["네에? 뭐라고요?!! 부끄러워요! 아직 그런 관계가 아니잖아요!"],
+                                      ["네엣? 뭐.. 뭐라고요?!! 우리 그", "호감도 High-2", "호감도 High-3"],
                                       ]
 
             return hl.choose_reply(random_response_string, feelings)
 
         elif intent == 'Communication.Event.Ask.StartWordGame':
-            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+            random_response_string = [["음... 끝말잇기? 좋아, 먼저 시작해.", "호감도 Low-2", "호감도 Low-3"],
                                       ["끝말잇기 하자고? 응 좋아, 먼저 시작해! 첫단어 한방은 안돼는거 알지? 끝내려면 '끝내자'라고 말해줘!",
-                                       "끝말잇기? 좋아! 첫단어 한방은 안돼는거 알지? 그만하고 싶으면 '끝내자'라고 말해줘!"
+                                       "끝말잇기? 좋아! 첫단어 한방은 안돼는거 알지? 기권하려면 그냥 졌다고 말해주면 돼 ㅋㅋ!"
+                                       "히힛! 끝말잇기? 좋아! 이번에도 꼭 이겨주지!"
                                        ],
-                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      [""],
                                       ]
 
             db.set_state(username, "wordgame")
@@ -185,7 +189,7 @@ class LuisAI:
             return hl.choose_reply(random_response_string, feelings)
         elif intent == 'Communication.RelationShip.Feelings.HateYou':
             random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
-                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["그렇게 말하면 서운하지...", "호감도 Middle-2", "호감도 Middle-3"],
                                       ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
                                       ]
 
@@ -207,7 +211,7 @@ class LuisAI:
 
         elif intent == 'None':
             random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
-                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
+                                      ["으.. 으응? 잘 못 알아들은 것 같아.", "잘 못 알아들었어. 다시 얘기해줘, %s!😅" % nickname],
                                       ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
                                       ]
 
@@ -223,7 +227,7 @@ class WordGame:
     opendict_url = "https://opendict.korean.go.kr/api/search"
     opendict_key = "0BC5747127481511D3A645F9CE49A624"
 
-    def word_game(self, username, request_string):
+    def word_game(self, username, request_string, nickname):
         # 새로운 블록버스터급 재난이 찾아온다.
 
         # '더 코더스: 더 뉴 헬: 끝말잇기' 2019년 10월 말 대개봉!
@@ -236,9 +240,9 @@ class WordGame:
 
         if nlp_result == 'Communication.Interrupt.QuitWordGame':
             print('WordGame Exit!')
-            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
-                                      ["후훗! 제가 이겼어요!"],
-                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+            random_response_string = [["훗! 제가 이겼네요."],
+                                      ["후훗! 제가 이겼어요! 앞으로도 끝말잇기 많이 해요!"],
+                                      ["제가 이겼어요! " + nickname + "님과 하는 거라 더 재미있었던 것 같아요. 앞으로도 자주 같이 놀아 주세요!"],
                                       ]
             feelings_result = db.alter_feelings(username, 5)
             db.set_state(username, "normal")

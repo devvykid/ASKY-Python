@@ -192,7 +192,7 @@ def request_asky():
         if state == 'wordgame':
             wg = WordGame()
 
-            reply = wg.word_game(username, request_string.strip())
+            reply = wg.word_game(username, request_string.strip(), user_info['data']['userstate']['nickname'])
 
             user_info = db.get_user_info(username, token)  # get user info again
 
