@@ -1,17 +1,15 @@
 """
-ASKY (애스키) 프로젝트
-Python Flask 서버 V2
+ASKY SERVER 2.1 - version 10/25/2019
 
-by github.com/computerpark (hackr)
+(c) 2019 JY Park (computerpark) . All Rights Reserved.
+
+app.py - 서버 리퀘스트를 처리합니다.
 """
 
-from flask import Flask, request, make_response, jsonify, redirect
-# import json
-# import random
+from flask import Flask, request, jsonify, redirect
 
-# from nlp import DialogFlow
 from database import DataBase
-from nlp import LuisAI
+from nlp import LuisAI, WordGame
 
 
 app = Flask(__name__)
@@ -111,6 +109,9 @@ def login():
 
     result = db.login_user(username, password)
 
+    db.reset_used_word(username)
+    db.set_state(username, "normal")
+
     return result
 
 
@@ -182,6 +183,33 @@ def request_asky():
         db = DataBase()
 
         user_info = db.get_user_info(username, token)
+
+        if user_info['result'] is 'error':
+            return user_info
+
+        state = user_info['data']['userstate']['state']
+
+        if state == 'wordgame':
+            wg = WordGame()
+
+            reply = wg.word_game(username, request_string.strip())
+
+            user_info = db.get_user_info(username, token)  # get user info again
+
+            result = {
+                "result": "success",
+                "data": {
+                    "userstate": user_info['data']['userstate']
+                },
+                "type": ["Conversation"],
+                "response": {
+                    "Conversation": {
+                        "str": reply
+                    }
+                }
+            }
+
+            return result
 
         luisai = LuisAI()
 

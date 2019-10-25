@@ -1,6 +1,9 @@
 import sqlite3
 import uuid
-import hashlib
+# import hashlib
+import pickle
+import codecs
+import re
 
 from library import HackerLibrary
 
@@ -8,6 +11,7 @@ from library import HackerLibrary
 class DataBase:
     user_db_location = './databases/user.db'
     token_db_location = './databases/token.db'
+    word_db_location = './databases/word.db'
 
     hl = HackerLibrary()
 
@@ -19,7 +23,13 @@ class DataBase:
             conn = sqlite3.connect(self.user_db_location)
             c = conn.cursor()
 
-            c.execute('CREATE TABLE user (username text, password text, name text, feelings integer, newuser integer )')
+            c.execute('CREATE TABLE user ('
+                      'username text, '
+                      'password text, '
+                      'name text, '
+                      'feelings integer, '
+                      'newuser integer, '
+                      'state text )')
 
             conn.commit()
             conn.close()
@@ -37,6 +47,18 @@ class DataBase:
             conn.close()
         except sqlite3.OperationalError:
             print("Token DB Init Failed.")
+
+        try:
+            # init word db
+            conn = sqlite3.connect(self.word_db_location)
+            c = conn.cursor()
+
+            c.execute('CREATE TABLE user (username text, used_words text )')
+
+            conn.commit()
+            conn.close()
+        except sqlite3.OperationalError:
+            print("Word DB Init Failed.")
 
     def create_user(self, username, password, nickname):
         # Check if username already exists
@@ -73,7 +95,8 @@ class DataBase:
         conn = sqlite3.connect(self.user_db_location)
         c = conn.cursor()
 
-        c.execute("INSERT INTO user VALUES ('%s', '%s', '%s', %d, %d)" % (username, enc_password, s, 50, 1))
+        c.execute(
+            "INSERT INTO user VALUES ('%s', '%s', '%s', %d, %d, '%s')" % (username, enc_password, s, 50, 1, "normal"))
         conn.commit()
 
         # Close Connection
@@ -151,7 +174,8 @@ class DataBase:
                         "userstate": {
                             "username": str(db_result[0]),
                             "feelings": db_result[3],
-                            "nickname": self.hl.decode_base64(db_result[2])
+                            "nickname": self.hl.decode_base64(db_result[2]),
+                            "state": db_result[5]
                         }
                     }
                 }
@@ -260,9 +284,136 @@ class DataBase:
                     "userstate": {
                         "username": str(db_result[0]),
                         "feelings": db_result[3],
-                        "nickname": self.hl.decode_base64(db_result[2])
+                        "nickname": self.hl.decode_base64(db_result[2]),
+                        "state": db_result[5]
                     }
                 }
             }
         else:
             raise sqlite3.DataError
+
+    def set_state(self, username, state):
+        # Connect USER DB
+        conn = sqlite3.connect(self.user_db_location)
+        c = conn.cursor()
+        c.execute('SELECT * from user WHERE username="%s"' % username)
+
+        db_result = c.fetchone()
+        if db_result is not None:
+            c.execute('UPDATE user SET state="%s" WHERE username="%s"' % (state, username))
+
+            conn.commit()
+            conn.close()
+
+            return 0
+        else:
+            raise sqlite3.DataError
+
+    def get_state(self, username):
+        # Connect USER DB
+        conn = sqlite3.connect(self.user_db_location)
+        c = conn.cursor()
+        c.execute('SELECT * from user WHERE username="%s"' % username)
+
+        db_result = c.fetchone()
+        if db_result is not None:
+            conn.close()
+            return db_result[5]
+
+        else:
+            raise sqlite3.DataError
+
+    def add_used_word(self, username, word):
+        # Connect WORD DB
+        conn = sqlite3.connect(self.word_db_location)
+        c = conn.cursor()
+        c.execute('SELECT * from user WHERE username="%s"' % username)
+
+        db_result = c.fetchone()
+        if db_result is not None:
+            pickled = db_result[1]
+            unpickled = pickle.loads(codecs.decode(pickled.encode(), "base64"))
+
+            print("언피클드: ")
+            print(unpickled)
+
+            if word in unpickled:  # 이미 존재
+                return 1
+
+            try:
+                if not word.startswith(list(unpickled[-1])[-1]):
+                    return 2  # 글자 안맞음
+            except IndexError:
+                pass
+
+            hangul = re.compile('[^ㄱ-ㅣ가-힣]+')  # 한글을 제외한 모든 글자
+            # hangul = re.compile('[^\u3131-\u3163\uac00-\ud7a3]+')  # 위와 동일
+            filter_char = hangul.sub('', word)  # 한글과 띄어쓰기를 제외한 모든 부분을 제거
+
+            if filter_char is not word:
+                print(filter_char)
+                return 3  # invalid character
+
+            if len(list(word)) <= 1:
+                return 4  # 1글자 이하
+
+            unpickled.append(word)
+
+            print("언피클드 (추가): ")
+            print(unpickled)
+
+            pickled = codecs.encode(pickle.dumps(unpickled), "base64").decode()
+
+            c.execute('UPDATE user SET used_words="%s" WHERE username="%s"' % (pickled, username))
+
+            conn.commit()
+            conn.close()
+
+            return 0
+        else:
+            used_word = [word]
+            pickled = codecs.encode(pickle.dumps(used_word), "base64").decode()
+
+            c.execute("INSERT INTO user VALUES ('%s', '%s')" % (username, pickled))
+            conn.commit()
+            conn.close()
+            return 0
+
+    def reset_used_word(self, username):
+        # Connect WORD DB
+        conn = sqlite3.connect(self.word_db_location)
+        c = conn.cursor()
+        c.execute('SELECT * from user WHERE username="%s"' % username)
+        print(username)
+
+        db_result = c.fetchone()
+        print(db_result)
+        if db_result is not None:
+            used_word = []
+            pickled = codecs.encode(pickle.dumps(used_word), "base64").decode()
+
+            c.execute('UPDATE user SET used_words="%s" WHERE username="%s"' % (pickled, username))
+
+            conn.commit()
+            conn.close()
+
+            return 0
+        else:  # 애초에 데이터베이스에 유저의 기록이 없을 때
+            return 0
+
+    def get_used_words(self, username):
+        # Connect WORD DB
+        conn = sqlite3.connect(self.word_db_location)
+        c = conn.cursor()
+        c.execute('SELECT * from user WHERE username="%s"' % username)
+
+        db_result = c.fetchone()
+        if db_result is not None:
+            pickled = db_result[1]
+            unpickled = pickle.loads(codecs.decode(pickled.encode(), "base64"))
+
+            conn.close()
+            return unpickled
+        else:
+            conn.close()
+            return []
