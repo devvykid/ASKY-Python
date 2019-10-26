@@ -49,6 +49,7 @@ class LuisAI:
 
         # BrainFuck & 노가다 Start!
         # Have a good time!
+        print("intent: " + intent)
 
         if intent == 'Special.NewUser':  # LUIS.ai 에 정의되지 않았음.
             return "안녕, %s! 나는 45라고 해. 우리 처음 보는 거 맞지? 넘 반가워!! 앞으로도 잘 부탁해!" % nickname
@@ -165,9 +166,9 @@ class LuisAI:
 
             return hl.choose_reply(random_response_string, feelings)
         elif intent == 'Communication.Intent.Yes':
-            random_response_string = [["ㅇㅋ 땡큐 "],
-                                      ["그럼 하기로 한거다."],
-                                      ["오~동의 해줘서 고마워."],
+            random_response_string = [["ㅇㅋ"],
+                                      ["굿!"],
+                                      ["그래!"],
                                       ]
 
             return hl.choose_reply(random_response_string, feelings)
