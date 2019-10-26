@@ -158,16 +158,16 @@ class LuisAI:
             return hl.choose_reply(random_response_string, feelings)
 
         elif intent == 'Communication.Intent.No':
-            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
-                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
-                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+            random_response_string = [["어...그래?", "아... 이거는 하기 싫어?", "아 이거는 별로 안좋아하는구나."],
+                                      ["음... 그럼 뭐할까?", "넌 뭐하고 싶었는데...", "그러면 다른거 뭐하지?"],
+                                      ["그럼 다른거 찾아보자.", "너는 하고 싶은거 있어?", "그럼 너는 뭐하고 싶은데?"],
                                       ]
 
             return hl.choose_reply(random_response_string, feelings)
         elif intent == 'Communication.Intent.Yes':
             random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
-                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
-                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ["호감도 Middle-1", "", "그럼 하기로 한거다."],
+                                      ["오~동의 해줘서 고마워.", "와 진짜로 동의 하는거야?", "네가 그렇게 말해주니까 기분 좋다."],
                                       ]
 
             return hl.choose_reply(random_response_string, feelings)
@@ -210,9 +210,9 @@ class LuisAI:
             return hl.choose_reply(random_response_string, feelings)
 
         elif intent == 'None':
-            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+            random_response_string = [["응? 뭐라고?", "어? 방금 뭐라고 말했어?", "어? 다시 한번 말해줘."],
                                       ["으.. 으응? 잘 못 알아들은 것 같아.", "잘 못 알아들었어. 다시 얘기해줘, %s!😅" % nickname],
-                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ["엉? 뭐라고 말했어? 미안해 내가 못 들었어", "한번만 다시말해주라", "혹시 한 번만 다시 말해줄수 있어? 미안해 잘 못 들었어."],
                                       ]
 
             return hl.choose_reply(random_response_string, feelings)
