@@ -86,7 +86,7 @@ class LuisAI:
             return hl.choose_reply(random_response_string, feelings)
 
         elif intent == 'Communication.Etc.WhatTheFuck':
-            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+            random_response_string = [["아직 그런거는 싫어요!", "싫어요. 아직은 서로 알게 된지 오래되지 않았잖아요.", "네에? 왜 그러세요?"],
                                       ["네에? 뭐라고요?!! 부끄러워요! 아직 그런 관계가 아니잖아요!"],
                                       ["네엣? 뭐.. 뭐라고요?!! 우리 그", "호감도 High-2", "호감도 High-3"],
                                       ]
@@ -94,7 +94,7 @@ class LuisAI:
             return hl.choose_reply(random_response_string, feelings)
 
         elif intent == 'Communication.Event.Ask.StartWordGame':
-            random_response_string = [["음... 끝말잇기? 좋아, 먼저 시작해.", "호감도 Low-2", "호감도 Low-3"],
+            random_response_string = [["음... 끝말잇기? 좋아, 먼저 시작해.", "음...그래 한번 해보자.먼저 시작해.", "끝말잇기 좋지. 너가 먼저 시작해."],
                                       ["끝말잇기 하자고? 응 좋아, 먼저 시작해! 첫단어 한방은 안돼는거 알지? 끝내려면 '끝내자'라고 말해줘!",
                                        "끝말잇기? 좋아! 첫단어 한방은 안돼는거 알지? 기권하려면 그냥 졌다고 말해주면 돼 ㅋㅋ!"
                                        "히힛! 끝말잇기? 좋아! 이번에도 꼭 이겨주지!"
@@ -107,7 +107,7 @@ class LuisAI:
 
             return hl.choose_reply(random_response_string, feelings)
         elif intent == 'Communication.Event.Ask.TellFunStory':
-            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+            random_response_string = [["재밌는 얘기? 음...네가 어떤 이야기를 좋아하는지 잘 모르겠는데", "호감도 Low-2", "호감도 Low-3"],
                                       ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
                                       ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
                                       ]
@@ -115,23 +115,23 @@ class LuisAI:
             return hl.choose_reply(random_response_string, feelings)
 
         elif intent == 'Communication.EveryDay.Ask.DoTogether.Eat':
-            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
-                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
-                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+            random_response_string = [["어...지금은 별로 배고프지 않은데...그냥 가보자.", "먹고 싶은게 딱히 없긴한데...그래 같이 먹자.", "음...그래 같이 그래 같이 먹자."],
+                                      ["음...뭐 먹고 싶은데?", "밥? 그래 같이 가보자", "그래 어디로 거고 싶은데?"],
+                                      ["그래 같이가자!", "마침 배고팠는데 잘됐다. 같이 가자.", "좋아 같이 먹자. 더운데 후식으로 아이스크림도 먹을래?"],
                                       ]
 
             return hl.choose_reply(random_response_string, feelings)
         elif intent == 'Communication.EveryDay.Ask.TellTodayStory':
-            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
+            random_response_string = [["재밌는 일은 없었는데...", "나 오늘은 딱히 재밌는 일이 없었어.", "음...오늘은 뭐했더라..."],
                                       ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
-                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ["호감도 High-1", "호감도 High-2", "나? 오늘은 "],
                                       ]
 
             return hl.choose_reply(random_response_string, feelings)
         elif intent == 'Communication.EveryDay.Ask.TodayFeelings':
-            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
-                                      ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
-                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+            random_response_string = [["음...지금은 그냥 그런데..", "오늘은 기분이 살짝 안 좋아.", "지금 기분? 그냥그래."],
+                                      ["지금 나쁘지 않아.", "그냥 좋은 편이야.", "지금? 그냥 기분 좋아."],
+                                      ["나? 오늘 뭔가 기분 좋아.", "오늘은 기분이 되게 좋아.", "나야 지금 너랑 있으니까 기분 좋지"],
                                       ]
 
             return hl.choose_reply(random_response_string, feelings)
