@@ -165,9 +165,9 @@ class LuisAI:
 
             return hl.choose_reply(random_response_string, feelings)
         elif intent == 'Communication.Intent.Yes':
-            random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
-                                      ["호감도 Middle-1", "", "그럼 하기로 한거다."],
-                                      ["오~동의 해줘서 고마워.", "와 진짜로 동의 하는거야?", "네가 그렇게 말해주니까 기분 좋다."],
+            random_response_string = [["ㅇㅋ 땡큐 "],
+                                      ["그럼 하기로 한거다."],
+                                      ["오~동의 해줘서 고마워."],
                                       ]
 
             return hl.choose_reply(random_response_string, feelings)
@@ -204,7 +204,7 @@ class LuisAI:
         elif intent == 'Communication.RelationShip.RequestDate':
             random_response_string = [["호감도 Low-1", "호감도 Low-2", "호감도 Low-3"],
                                       ["호감도 Middle-1", "호감도 Middle-2", "호감도 Middle-3"],
-                                      ["호감도 High-1", "호감도 High-2", "호감도 High-3"],
+                                      ["호감도 High-1"],
                                       ]
 
             return hl.choose_reply(random_response_string, feelings)
